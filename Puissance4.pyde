@@ -3,40 +3,66 @@ gri = ['','','','','','','','','','','','','','','','','','','','','','','','','
 pion = Pion("Rouge",0,0)
 
 def setup():
-    size(800,900)
+    size(800,800)
     dessiner_grille()
+    fill(0,50,255)
+    rect(500,680,200,50)
+    textSize(18)
+    fill(0,0,0)
+    text("Au joueur :", 50,710)
+    textAlign(CENTER)
+    text("Recommencer", 600,710)
+    
 
 def draw():
-    if pion_gagnant() :
-        print("toto")
-        if pion.changer_couleur == "Rouge" :
-            textAlign(CENTER)
-            fill(0,0,0)
-            text("PARTIE GAGNEE PAR LE JOUEUR JAUNE",400,680)
-        else :
-            textAlign(CENTER)
-            fill(0,0,0)
-            text("PARTIE GAGNEE PAR LE JOUEUR ROUGE",400,680)
-            
-            
+    au_tour_de()
+    
+    
+        
+
+
 def mousePressed():
     global gri
     x = mouseX
     y = mouseY
-    if not fin_partie() :
+    print(x,y)
+    if recommencer(x,y) == True :
+        gri = ['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','']
+        dessiner_grille()
+        pion.couleur = "Rouge"
+        
+    if fin_partie() == False :
         if clic_valid(x,y):
             if case_vide(x,y):
                 descendre_pion(x,y)
                 maj_grille(x,y)
                 print(gri)
                 pion.changer_couleur()
-                if pion_gagnant() :
-                    print("toto")
-                
-                    
-        
-        
-                
+                if pion_gagnant_rouge() is True :
+                    textAlign(CENTER)
+                    fill(0)
+                    text("PARTIE GAGNEE PAR LE JOUEUR ROUGE",400,300)
+                if pion_gagnant_jaune() is True :
+                    textAlign(CENTER)
+                    fill(0)
+                    text("PARTIE GAGNEE PAR LE JOUEUR JAUNE",400,300)
+
+def recommencer(x,y):
+    if 500 < x < 700 and 680 < y < 730 :
+        return True
+    else :
+        return False
+
+def au_tour_de():
+    if pion.couleur == "Jaune": 
+        stroke(250,250,0)     
+        rect(200,680,200,50)
+        fill(250,250,0)
+    if pion.couleur == "Rouge" :
+        stroke(250,0,0)
+        rect(200,680,200,50)
+        fill(250,0,0)
+
 def dessiner_grille():
     fill(0,50,255)
     stroke(0,50,255)
@@ -51,14 +77,18 @@ def maj_grille(x,y):
     indice = descendre_pion(x,y)
     if pion.couleur == "Rouge":
         gri[indice] = 'R'
-    else:
+    elif pion.couleur == "Jaune":
         gri[indice] = 'J'
 
 def fin_partie():
-    if '' in gri or not pion_gagant():
-        return False
-    else :
+    if not '' in gri :
         return True
+    elif pion_gagnant_jaune() == True :
+        return True
+    elif pion_gagnant_rouge() == True :
+        return True
+    else :
+        return False
 
 def clic_valid(x,y):
     if 50 < x < 750 and 50 < y < 650 :
@@ -70,7 +100,7 @@ def case_vide(x,y):
     a = convertir_les_coord_en_ind(x,y)
     if gri[a] == '':
         return True
-   
+
 def convertir_les_coord_en_ind(x,y):
     '''
     entrée :
@@ -81,7 +111,7 @@ def convertir_les_coord_en_ind(x,y):
     '''
     x = ((x+50)//100*100)
     y = ((y+50)//100*100)
-    
+
     if x == 100 and y == 600:
         return 0
     elif x == 100 and y == 500:
@@ -254,47 +284,68 @@ def conv_ind_coor(ind):
         return 700,200
     elif ind == 41 :
         return 700,100
-    
-def pion_gagnant():
+
+def pion_gagnant_rouge():
     '''teste les combinaisons gagantes a l'horizontale '''
     for i in range(0,6):
-        if gri[i]==gri[i+6]==gri[i+12]==gri[i+18]==( 'R' or 'J'):
+        if gri[i]==gri[i+6]==gri[i+12]==gri[i+18]==('R'):
             return True
-        elif gri[i+6]==gri[i+12]==gri[i+18]==gri[i+24]==( 'R' or 'J'):
+        elif gri[i+6]==gri[i+12]==gri[i+18]==gri[i+24]==('R'):
             return True
-        elif gri[i+12]==gri[i+18]==gri[i+24]==gri[i+30]==( 'R' or 'J'):
+        elif gri[i+12]==gri[i+18]==gri[i+24]==gri[i+30]==('R'):
             return True
-        elif gri[i+18]==gri[i+24]==gri[i+30]==gri[i+36]==( 'R' or 'J'):
+        elif gri[i+18]==gri[i+24]==gri[i+30]==gri[i+36]==('R'):
             return True
         '''teste les combinaisons gagantes à la verticale '''
     for i in range(0,37,6):
-        if gri[i]==gri[i+1]==gri[i+2]==gri[i+3]==( 'R' or 'J'):
+        if gri[i]==gri[i+1]==gri[i+2]==gri[i+3]==('R'):
             return True
-        elif gri[i+1]==gri[i+2]==gri[i+3]==gri[i+4]==( 'R' or 'J'):
+        elif gri[i+1]==gri[i+2]==gri[i+3]==gri[i+4]==('R'):
             return True
-        elif gri[i+2]==gri[i+3]==gri[i+4]==gri[i+5]==( 'R' or 'J'):
+        elif gri[i+2]==gri[i+3]==gri[i+4]==gri[i+5]==('R'):
             return True
         '''teste les combinaisons gagantes en diagonale'''
     for i in range(0,19,6):
-        if gri[i]==gri[i+7]==gri[i+14]==gri[i+21]==( 'R' or 'J'):
+       for j in range(0,3):
+           if gri[i+j] == gri[i+j+7] == gri[i+j+14] == gri[i+j+21] == ('R'):
+               return True
+           
+    for i in range(3,22,6):
+       for j in range(0,3):
+           if gri[i+j] == gri[i+j+5] == gri[i+j+10] == gri[i+j+15] == ('R'):
+               return True
+    return False
+
+def pion_gagnant_jaune():
+    '''teste les combinaisons gagantes a l'horizontale '''
+    for i in range(0,6):
+        if gri[i]==gri[i+6]==gri[i+12]==gri[i+18]==('J'):
             return True
-    for i in range(36,17,-6):
-        if gri[i]==gri[i-5]==gri[i-10]==gri[i-15]==( 'R' or 'J'):
+        elif gri[i+6]==gri[i+12]==gri[i+18]==gri[i+24]==('J'):
             return True
-    for i in range(1,20,6):
-        if gri[i]==gri[i+7]==gri[i+14]==gri[i+21]==( 'R' or 'J'):
+        elif gri[i+12]==gri[i+18]==gri[i+24]==gri[i+30]==('J'):
             return True
-    for i in range(37,18,-6):
-        if gri[i]==gri[i-5]==gri[i-10]==gri[i-15]==( 'R' or 'J'):
+        elif gri[i+18]==gri[i+24]==gri[i+30]==gri[i+36]==('J'):
             return True
-    for i in range(2,21,6):
-        if gri[i]==gri[i+7]==gri[i+14]==gri[i+21]==( 'R' or 'J'):
+        '''teste les combinaisons gagantes à la verticale '''
+    for i in range(0,37,6):
+        if gri[i]==gri[i+1]==gri[i+2]==gri[i+3]==('J'):
             return True
-    for i in range(38,19,-6):
-        if gri[i]==gri[i-5]==gri[i-10]==gri[i-15]==( 'R' or 'J'):
+        elif gri[i+1]==gri[i+2]==gri[i+3]==gri[i+4]==('J'):
             return True
-    else :
-        return False
+        elif gri[i+2]==gri[i+3]==gri[i+4]==gri[i+5]==('J'):
+            return True
+        '''teste les combinaisons gagantes en diagonale'''
+    for i in range(0,19,6):
+       for j in range(0,3):
+           if gri[i+j] == gri[i+j+7] == gri[i+j+14] == gri[i+j+21] == ('J'):
+               return True
+           
+    for i in range(3,22,6):
+       for j in range(0,3):
+           if gri[i+j] == gri[i+j+5] == gri[i+j+10] == gri[i+j+15] == ('J'):
+               return True
+    return False
 
 def descendre_pion(x,y):
     ind = convertir_les_coord_en_ind(x,y)
@@ -340,5 +391,3 @@ def descendre_pion(x,y):
         a,b = conv_ind_coor(ind)
         pion.afficher_pion(a,b)
         return ind
-    
-     
